@@ -3,6 +3,7 @@ package com.satyayudha0077.assessment_mobpro.ui.screen
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.pdf.models.ListItem
 import android.os.Message
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,8 +51,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -62,7 +68,6 @@ import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
 @Composable
 fun MainScreen(navController: NavHostController) {
     var index by remember { mutableIntStateOf(0) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -87,197 +92,52 @@ fun MainScreen(navController: NavHostController) {
             )
         }
     ) { innerPadding ->
-        ScreenContent(data[index], Modifier.padding(innerPadding)) {
-            index = if (index == data.size-1) 0 else index + 1
+        ScreenContent(modifier = Modifier.padding(innerPadding))
+    }
+}
+
+@Composable
+fun ScreenContent(modifier: Modifier = Modifier) {
+
+    val viewModel: MainViewModel = viewModel()
+    val data = viewModel.data
+
+    LazyColumn(
+        modifier = modifier.fillMaxSize()
+    ) {
+        items(data) {
+            ListItem(buah = it)
+            HorizontalDivider()
         }
     }
 }
 
 @Composable
-fun ScreenContent(buah: Buah, modifier: Modifier = Modifier, onClick: () -> Unit
-) {
-    var jumlah by rememberSaveable { mutableStateOf("") }
-    var jumlahError by rememberSaveable { mutableStateOf(false) }
-
-    var berat by rememberSaveable { mutableStateOf("") }
-    var beratError by rememberSaveable { mutableStateOf(false) }
-
-    val radioOptions = listOf(
-        stringResource(R.string.satuan),
-        stringResource(R.string.kilogram)
-    )
-    var jenis by rememberSaveable { mutableStateOf(radioOptions[0]) }
-
-    var total by rememberSaveable { mutableStateOf(0) }
-
-    val context = LocalContext.current
-
+fun ListItem(buah: Buah) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Image(
             painter = painterResource(id = buah.imageResId),
-            contentDescription = stringResource(
-                R.string.gambar,
-                buah.nama
-            ),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.size(200.dp)
+            contentDescription = stringResource(id = buah.nama),
+            modifier = Modifier.size(120.dp),
+            contentScale = ContentScale.Crop
         )
         Text(
             text = stringResource(id = buah.nama),
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(top = 12.dp)
+            maxLines = 1,
+            style = MaterialTheme.typography.titleMedium,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Bold
         )
-        OutlinedTextField(
-            value = jumlah,
-            onValueChange = {
-                jumlah = it
-                jumlahError = false
-            },
-            label = {
-                Text(text = stringResource(R.string.jumlah))
-            },
-            isError = jumlahError,
-
-            trailingIcon = {
-                IconPicker(
-                    isError = jumlahError,
-                    unit = "pcs"
-                )
-            },
-            supportingText = {
-                ErrorHint(jumlahError)
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .padding(top = 12.dp)
+        Text(
+            text = stringResource(id = buah.manfaat),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
-        OutlinedTextField(
-            value = berat,
-            onValueChange = {
-                berat = it
-                beratError = false
-            },
-            label = {
-                Text(text = stringResource(R.string.berat))
-            },
-            isError = beratError,
-            trailingIcon = {
-                IconPicker(
-                    isError = beratError,
-                    unit = "kg"
-                )
-            },
-            supportingText = {
-                ErrorHint(beratError)
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .padding(top = 12.dp)
-        )
-        Row (
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-        ){
-            radioOptions.forEach { text ->
-                FruitOption(
-                    label = text,
-                    isSelected = jenis == text,
-                    modifier = Modifier
-                        .selectable(
-                            selected = jenis == text,
-                            onClick = {
-                                jenis = text
-                            },
-                            role = Role.RadioButton
-                        )
-                        .weight(1f)
-                        .padding(16.dp)
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Button(
-                    onClick = {
-                        onClick()
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(50.dp),
-                    contentPadding = PaddingValues(
-                        vertical = 14.dp
-                    )
-                ) {
-                    Text(text = stringResource(R.string.ganti))
-                }
-                Button(
-                    onClick = {
-                        jumlahError = jumlah.isEmpty() || jumlah == "0"
-                        beratError = berat.isEmpty() || berat == "0"
-                        if (jumlahError || beratError) return@Button
-                        total = hitungHarga(
-                            jumlah.toInt(),
-                            berat.toInt(),
-                            jenis == radioOptions[0]
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(50.dp),
-                    contentPadding = PaddingValues(
-                        vertical = 14.dp
-                    )
-                ) {
-                    Text(text = stringResource(R.string.count))
-                }
-            }
-        }
-        if (total != 0) {
-
-            val message = stringResource(
-                R.string.bagikan_template,
-                stringResource(id = buah.nama),
-                jumlah,
-                berat,
-                jenis,
-                total
-            )
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                thickness = 1.dp
-            )
-            Text(
-                text = "Total Harga",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Rp $total",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Button(
-                onClick = { shareData(context, message) },
-                modifier = Modifier.padding(top = 8.dp),
-                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
-            ) {
-                Text(text = stringResource(R.string.bagikan))
-            }
-        }
     }
 }
 
