@@ -2,4 +2,6 @@
 <resources>
     <string name="app_name">assessment_mobpro</string>
     <string name="count">Hitung +1</string>
+    <string name="gambar">gambar %1$s</string>
+    <string name="lanjut">Lanjut</string>
 </resources>

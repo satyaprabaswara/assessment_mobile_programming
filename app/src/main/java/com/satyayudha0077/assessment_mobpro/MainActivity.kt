@@ -58,6 +58,8 @@ fun MainScreen() {
         Buah("Pisang", R.drawable.pisang),
     )
 
+    var index by remember { mutableIntStateOf(0) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,12 +73,14 @@ fun MainScreen() {
             )
         }
     ) { innerPadding ->
-        ScreenContent(data[0], Modifier.padding(innerPadding))
+        ScreenContent(data[index], Modifier.padding(innerPadding)) {
+            index = if (index == data.size-1) 0 else index + 1
+        }
     }
 }
 
 @Composable
-fun ScreenContent(buah: Buah, modifier: Modifier = Modifier) {
+fun ScreenContent(buah: Buah, modifier: Modifier = Modifier, onClick:() -> Unit) {
     var number by remember { mutableIntStateOf(0) }
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
@@ -99,6 +103,13 @@ fun ScreenContent(buah: Buah, modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = modifier.padding(top = 16.dp)
             )
+            Button(
+                onClick = { onClick() },
+                modifier = Modifier.fillMaxWidth(0.5f).padding(top = 24.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                Text(text = stringResource(R.string.lanjut))
+            }
         }
         Button(
             onClick = { number++ },
