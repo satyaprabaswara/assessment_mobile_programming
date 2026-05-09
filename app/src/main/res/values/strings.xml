@@ -9,4 +9,11 @@
     <string name="jumlah">Number Of Fruits</string>
     <string name="ganti">Change</string>
     <string name="input_invalid">Cannot Be Empty</string>
+    <string name="tentang">About Application</string>
+    <string name="copy_right">MyFruit is an Android application for calculating the total price of fruit based on the number of fruits or weight in kilograms.\n\n
+Users can select the type of fruit, enter the quantity or weight, and the application will automatically calculate the total price.\n\n
+This application was created as part of a Mobile Programming practicum using Jetpack Compose.\n\n
+Copyright © 2026 Satya Prabaswara.\n
+All rights reserved.</string>
+
 </resources>

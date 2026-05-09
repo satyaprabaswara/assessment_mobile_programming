@@ -79,6 +79,29 @@ fun MainScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AboutScreen() {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = stringResource(id = R.string.tentang))
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+    ) { innerPadding ->
+        Text(
+            text = stringResource(R.string.copy_right),
+            modifier = Modifier.padding(innerPadding).padding(16.dp)
+        )
+    }
+}
+
 @Composable
 fun ScreenContent(buah: Buah, modifier: Modifier = Modifier, onClick: () -> Unit
 ) {
@@ -313,5 +336,14 @@ private fun hitungHarga(
 fun MainScreenPreview() {
     Assessment_mobproTheme {
         MainScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun AboutScreenPreview() {
+    Assessment_mobproTheme {
+        AboutScreen()
     }
 }
