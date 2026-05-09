@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">MyFruit</string>
-    <string name="count">Count +1</string>
+    <string name="count">Count</string>
     <string name="gambar">Image %1$s</string>
     <string name="lanjut">Continue</string>
     <string name="berat">Weight</string>
-    <string name="satuan">Per Piece</string>
-    <string name="kilogram">Per Kilogram</string>
+    <string name="satuan">Piece</string>
+    <string name="kilogram">Kilogram</string>
     <string name="jumlah">Number Of Fruits</string>
+    <string name="ganti">Change</string>
 </resources>

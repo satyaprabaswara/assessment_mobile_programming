@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BuahKu</string>
-    <string name="count">Hitung +1</string>
+    <string name="count">Hitung</string>
     <string name="gambar">gambar %1$s</string>
     <string name="lanjut">Lanjut</string>
     <string name="berat">Berat</string>
     <string name="satuan">Per Buah</string>
     <string name="kilogram">Per Kilogram</string>
     <string name="jumlah">Jumlah Buah</string>
+    <string name="ganti">Ganti</string>
 </resources>
