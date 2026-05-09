@@ -16,4 +16,15 @@ This application was created as part of a Mobile Programming practicum using Jet
 Copyright © 2026 Satya Prabaswara.\n
 All rights reserved.</string>
     <string name="kembali">Back</string>
+    <string name="bagikan">Share</string>
+    <string name="bagikan_template">Fruit name: %1$s\n
+Quantity: %2$s pcs\n
+Weight: %3$s kg\n
+Purchase type: %4$s\n\n
+Total price: Rp %5$d</string>
+    <string name="apel">Appel</string>
+    <string name="alpukat">Avocado</string>
+    <string name="pisang">Banana</string>
+    <string name="jeruk">Orange</string>
+    <string name="jambu">Guava</string>
 </resources>

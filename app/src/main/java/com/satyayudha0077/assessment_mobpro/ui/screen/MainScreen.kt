@@ -1,6 +1,9 @@
 package com.satyayudha0077.assessment_mobpro.ui.screen
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
+import android.os.Message
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -58,11 +62,11 @@ import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
 @Composable
 fun MainScreen(navController: NavHostController) {
     val data = listOf(
-        Buah("Alpukat", R.drawable.alpukat),
-        Buah("Apel", R.drawable.apel),
-        Buah("Jambu", R.drawable.jambu),
-        Buah("Jeruk", R.drawable.jeruk),
-        Buah("Pisang", R.drawable.pisang),
+        Buah(R.string.alpukat, R.drawable.alpukat),
+        Buah(R.string.apel, R.drawable.apel),
+        Buah(R.string.jambu, R.drawable.jambu),
+        Buah(R.string.jeruk, R.drawable.jeruk),
+        Buah(R.string.pisang, R.drawable.pisang),
     )
 
     var index by remember { mutableIntStateOf(0) }
@@ -114,6 +118,8 @@ fun ScreenContent(buah: Buah, modifier: Modifier = Modifier, onClick: () -> Unit
 
     var total by rememberSaveable { mutableStateOf(0) }
 
+    val context = LocalContext.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -132,7 +138,7 @@ fun ScreenContent(buah: Buah, modifier: Modifier = Modifier, onClick: () -> Unit
             modifier = Modifier.size(200.dp)
         )
         Text(
-            text = buah.nama,
+            text = stringResource(id = buah.nama),
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(top = 12.dp)
         )
@@ -251,6 +257,15 @@ fun ScreenContent(buah: Buah, modifier: Modifier = Modifier, onClick: () -> Unit
             }
         }
         if (total != 0) {
+
+            val message = stringResource(
+                R.string.bagikan_template,
+                stringResource(id = buah.nama),
+                jumlah,
+                berat,
+                jenis,
+                total
+            )
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
                 thickness = 1.dp
@@ -263,6 +278,13 @@ fun ScreenContent(buah: Buah, modifier: Modifier = Modifier, onClick: () -> Unit
                 text = "Rp $total",
                 style = MaterialTheme.typography.headlineMedium
             )
+            Button(
+                onClick = { shareData(context, message) },
+                modifier = Modifier.padding(top = 8.dp),
+                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+            ) {
+                Text(text = stringResource(R.string.bagikan))
+            }
         }
     }
 }
@@ -322,6 +344,16 @@ private fun hitungHarga(
         jumlah * 5000
     } else {
         berat * 20000
+    }
+}
+
+private fun  shareData(context: Context, message: String){
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, message)
+    }
+    if (shareIntent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(shareIntent)
     }
 }
 

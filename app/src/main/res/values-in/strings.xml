@@ -13,4 +13,11 @@
     <string name="tentang">Tentang Aplikasi</string>
     <string name="copy_right">BuahKu merupakan aplikasi Android untuk menghitung total harga buah berdasarkan jumlah buah atau berat dalam kilogram.\\n\\n     Pengguna dapat memilih jenis buah, memasukkan jumlah atau berat, lalu aplikasi akan menghitung total harga secara otomatis.\\n\\n     Aplikasi ini dibuat sebagai bagian dari praktikum Mobile Programming menggunakan Jetpack Compose.\\n\\n     Copyright © 2026 Satya Prabaswara.\\n     All rights reserved.</string>
     <string name="kembali">Kembali</string>
+    <string name="bagikan">Bagikan</string>
+    <string name="bagikan_template">Nama buah: %1$s\\n     Jumlah: %2$s pcs\\n     Berat: %3$s kg\\n     Jenis pembelian: %4$s\\n\\n     Total harga: Rp %5$d</string>
+    <string name="apel">Apel</string>
+    <string name="alpukat">Alpukat</string>
+    <string name="pisang">Pisang</string>
+    <string name="jeruk">Jeruk</string>
+    <string name="jambu">Jambu</string>
 </resources>
