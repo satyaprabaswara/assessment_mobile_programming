@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -19,6 +20,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -66,44 +68,55 @@ fun MainScreen() {
 
 @Composable
 fun ScreenContent(buah: Buah, modifier: Modifier = Modifier, onClick:() -> Unit) {
-    var number by remember { mutableIntStateOf(0) }
+    var jumlah by remember { mutableStateOf("") }
+
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = buah.imageResId),
-                contentDescription = stringResource(R.string.gambar, buah.nama),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(132.dp)
-            )
-            Text(
-                text = buah.nama,
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = modifier.padding(top = 16.dp)
-            )
-            Button(
-                onClick = { onClick() },
-                modifier = Modifier.fillMaxWidth(0.5f).padding(top = 24.dp),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                Text(text = stringResource(R.string.lanjut))
-            }
-        }
+        Image(
+            painter = painterResource(id = buah.imageResId),
+            contentDescription = stringResource(R.string.gambar, buah.nama),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(132.dp),
+
+        )
+        Text(
+            text = buah.nama,
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(top = 16.dp),
+        )
+        OutlinedTextField(
+            value = jumlah,
+            onValueChange = {
+                jumlah = it
+            },
+            label = {
+                Text(text = stringResource(R.string.jumlah))
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .padding(top = 24.dp)
+        )
+        OutlinedTextField(
+            value = jumlah,
+            onValueChange = {
+                jumlah = it
+            },
+            label = {
+                Text(text = stringResource(R.string.kilogram))
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .padding(top = 24.dp)
+        )
         Button(
-            onClick = { number++ },
-            modifier = Modifier.fillMaxWidth(0.5f).padding(top = 16.dp),
+            onClick = { onClick() },
+            modifier = Modifier.fillMaxWidth(0.5f).padding(top = 24.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
-            Text(
-                text = stringResource(R.string.count)
-            )
+            Text(text = stringResource(R.string.lanjut))
         }
     }
 }

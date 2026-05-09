@@ -1,6 +1,10 @@
 <resources>
-    <string name="app_name">assessment_mobpro</string>
+    <string name="app_name">MyFruit</string>
     <string name="count">Count +1</string>
     <string name="gambar">Image %1$s</string>
     <string name="lanjut">Continue</string>
+    <string name="berat">Weight</string>
+    <string name="satuan">Per Piece</string>
+    <string name="kilogram">Per Kilogram</string>
+    <string name="jumlah">Number Of Fruits</string>
 </resources>
