@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">assessment_mobpro</string>
     <string name="count">Count +1</string>
+    <string name="gambar">Image %1$s</string>
 </resources>
