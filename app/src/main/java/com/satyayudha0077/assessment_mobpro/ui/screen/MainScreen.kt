@@ -98,16 +98,26 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun ScreenContent(modifier: Modifier = Modifier) {
-
     val viewModel: MainViewModel = viewModel()
-    val data = viewModel.data
+    val data = emptyList<Buah>()
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize()
-    ) {
-        items(data) {
-            ListItem(buah = it)
-            HorizontalDivider()
+    if (data.isEmpty()) {
+        Column(
+            modifier = modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = stringResource(id = R.string.list_kosong))
+        }
+
+    } else {
+        LazyColumn(
+            modifier = modifier.fillMaxSize()
+        ) {
+            items(data) {
+                ListItem(buah = it)
+                HorizontalDivider()
+            }
         }
     }
 }

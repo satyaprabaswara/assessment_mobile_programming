@@ -42,4 +42,5 @@
     <string name="manfaat_mel">Mencegah dehidrasi</string>
     <string name="manfaat_straw">Menyehatkan kulit</string>
     <string name="manfaat_nag">Baik untuk pencernaan dan meningkatkan daya tahan tubuh</string>
+    <string name="list_kosong">Belum ada data</string>
 </resources>
