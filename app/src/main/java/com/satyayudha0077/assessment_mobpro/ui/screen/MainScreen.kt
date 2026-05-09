@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -77,23 +80,22 @@ fun MainScreen() {
 }
 
 @Composable
-fun ScreenContent(
-    buah: Buah,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+fun ScreenContent(buah: Buah, modifier: Modifier = Modifier, onClick: () -> Unit
 ) {
-
     var jumlah by remember { mutableStateOf("") }
+    var jumlahError by remember { mutableStateOf(false) }
 
     var berat by remember { mutableStateOf("") }
+    var beratError by remember { mutableStateOf(false) }
 
     val radioOptions = listOf(
         stringResource(R.string.satuan),
         stringResource(R.string.kilogram)
     )
-    var jenis by remember {
-        mutableStateOf(radioOptions[0])
-    }
+    var jenis by remember { mutableStateOf(radioOptions[0]) }
+
+    var total by remember { mutableStateOf(0) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -120,9 +122,21 @@ fun ScreenContent(
             value = jumlah,
             onValueChange = {
                 jumlah = it
+                jumlahError = false
             },
             label = {
                 Text(text = stringResource(R.string.jumlah))
+            },
+            isError = jumlahError,
+
+            trailingIcon = {
+                IconPicker(
+                    isError = jumlahError,
+                    unit = "pcs"
+                )
+            },
+            supportingText = {
+                ErrorHint(jumlahError)
             },
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -132,9 +146,20 @@ fun ScreenContent(
             value = berat,
             onValueChange = {
                 berat = it
+                beratError = false
             },
             label = {
                 Text(text = stringResource(R.string.berat))
+            },
+            isError = beratError,
+            trailingIcon = {
+                IconPicker(
+                    isError = beratError,
+                    unit = "kg"
+                )
+            },
+            supportingText = {
+                ErrorHint(beratError)
             },
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -168,32 +193,58 @@ fun ScreenContent(
                 .padding(top = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Button(
-                onClick = {
-                    jumlah = ""
-                    berat = ""
-                    jenis = radioOptions[0]
-                },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(50.dp),
-                contentPadding = PaddingValues(
-                    vertical = 14.dp
-                )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(text = stringResource(R.string.ganti))
+                Button(
+                    onClick = {
+                        onClick()
+                    },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(50.dp),
+                    contentPadding = PaddingValues(
+                        vertical = 14.dp
+                    )
+                ) {
+                    Text(text = stringResource(R.string.ganti))
+                }
+                Button(
+                    onClick = {
+                        jumlahError = jumlah.isEmpty() || jumlah == "0"
+                        beratError = berat.isEmpty() || berat == "0"
+                        if (jumlahError || beratError) return@Button
+                        total = hitungHarga(
+                            jumlah.toInt(),
+                            berat.toInt(),
+                            jenis == radioOptions[0]
+                        )
+                    },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(50.dp),
+                    contentPadding = PaddingValues(
+                        vertical = 14.dp
+                    )
+                ) {
+                    Text(text = stringResource(R.string.count))
+                }
             }
-            Button(
-                onClick = {
-                    onClick()
-                },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(50.dp),
-                contentPadding = PaddingValues(
-                    vertical = 14.dp
-                )
-            ) {
-                Text(text = stringResource(R.string.count))
-            }
+        }
+        if (total != 0) {
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp
+            )
+            Text(
+                text = "Total Harga",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = "Rp $total",
+                style = MaterialTheme.typography.headlineMedium
+            )
         }
     }
 }
@@ -217,6 +268,42 @@ fun FruitOption(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(start = 4.dp)
         )
+    }
+}
+
+@Composable
+fun IconPicker(isError: Boolean, unit: String) {
+    if (isError) {
+        Icon(
+            imageVector = Icons.Filled.Warning,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error
+        )
+    } else {
+        Text(text = unit)
+    }
+}
+
+@Composable
+fun ErrorHint(isError: Boolean) {
+    if (isError) {
+        Text(
+            text = "Input tidak valid",
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
+private fun hitungHarga(
+    jumlah: Int,
+    berat: Int,
+    isPiece: Boolean
+): Int {
+    return if (isPiece) {
+        jumlah * 5000
+    } else {
+        berat * 20000
     }
 }
 
