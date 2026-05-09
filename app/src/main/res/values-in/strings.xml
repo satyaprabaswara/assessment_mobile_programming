@@ -20,4 +20,26 @@
     <string name="pisang">Pisang</string>
     <string name="jeruk">Jeruk</string>
     <string name="jambu">Jambu</string>
+    <string name="anggur">Anggur</string>
+    <string name="durian">Durian</string>
+    <string name="pepaya">Pepaya</string>
+    <string name="mangga">Mangga</string>
+    <string name="manggis">Manggis</string>
+    <string name="melon">Melon</string>
+    <string name="naga">Buah Naga</string>
+    <string name="strawberry">Strawberry</string>
+    <string name="list">Daftar Buah</string>
+    <string name="manfaat_alp">Menjaga kesehatan jantung</string>
+    <string name="manfaat_app">Baik untuk pencernaan</string>
+    <string name="manfaat_jam">Meningkatkan imun tubuh</string>
+    <string name="manfaat_jer">Kaya vitamin C</string>
+    <string name="manfaat_pis">Menambah energi</string>
+    <string name="manfaat_ang">Menjaga kesehatan kulit</string>
+    <string name="manfaat_dur">Sumber energi alami</string>
+    <string name="manfaat_pep">Melancarkan pencernaan</string>
+    <string name="manfaat_mang">Menjaga kesehatan mata</string>
+    <string name="manfaat_gis">Mengandung antioksidan tinggi</string>
+    <string name="manfaat_mel">Mencegah dehidrasi</string>
+    <string name="manfaat_straw">Menyehatkan kulit</string>
+    <string name="manfaat_nag">Baik untuk pencernaan dan meningkatkan daya tahan tubuh</string>
 </resources>

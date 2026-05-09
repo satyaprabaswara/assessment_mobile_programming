@@ -61,14 +61,6 @@ import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    val data = listOf(
-        Buah(R.string.alpukat, R.drawable.alpukat),
-        Buah(R.string.apel, R.drawable.apel),
-        Buah(R.string.jambu, R.drawable.jambu),
-        Buah(R.string.jeruk, R.drawable.jeruk),
-        Buah(R.string.pisang, R.drawable.pisang),
-    )
-
     var index by remember { mutableIntStateOf(0) }
 
     Scaffold(
