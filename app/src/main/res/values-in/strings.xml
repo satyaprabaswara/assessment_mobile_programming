@@ -43,4 +43,7 @@
     <string name="manfaat_straw">Menyehatkan kulit</string>
     <string name="manfaat_nag">Baik untuk pencernaan dan meningkatkan daya tahan tubuh</string>
     <string name="list_kosong">Belum ada data</string>
+    <string name="x_diklik">%1$s diklik!</string>
+    <string name="tambah">Tambah Buah</string>
+    <string name="belum">Belum bisa tambah buah</string>
 </resources>

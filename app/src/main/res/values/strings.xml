@@ -50,4 +50,7 @@ Total price: Rp %5$d</string>
     <string name="manfaat_straw">Keeps skin healthy</string>
     <string name="manfaat_nag">Good for digestion and boosts the immune system</string>
     <string name="list_kosong">No data yet</string>
+    <string name="x_diklik">%1$s clicked!</string>
+    <string name="tambah">Add Fruit</string>
+    <string name="belum">Cant add fruit yet</string>
 </resources>
