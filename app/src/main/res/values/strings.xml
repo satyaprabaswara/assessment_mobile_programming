@@ -15,5 +15,5 @@ Users can select the type of fruit, enter the quantity or weight, and the applic
 This application was created as part of a Mobile Programming practicum using Jetpack Compose.\n\n
 Copyright © 2026 Satya Prabaswara.\n
 All rights reserved.</string>
-
+    <string name="kembali">Back</string>
 </resources>
