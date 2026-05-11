@@ -77,9 +77,8 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
 
     var nama by remember { mutableStateOf("") }
     var manfaat by remember { mutableStateOf("") }
-    var imageResId by remember {
-        mutableStateOf(daftarGambar[0])
-    }
+    var imageResId by remember { mutableStateOf(daftarGambar[0]) }
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit) {
         if (id == null) return@LaunchedEffect
@@ -152,8 +151,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     }
                     if (id != null) {
                         DeleteAction {
-                            viewModel.delete(id)
-                            navController.popBackStack()
+                            showDialog = true
                         }
                     }
                 }
@@ -169,6 +167,16 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
             onDescChange = { manfaat = it },
             modifier = Modifier.padding(padding)
         )
+
+        if (id != null && showDialog) {
+            DisplayAlertDialog(
+                onDismissRequest = { showDialog = false }) { {
+                    showDialog = false
+                    viewModel.delete(id)
+                    navController.popBackStack()
+                }
+            }
+        }
     }
 }
 
@@ -209,7 +217,6 @@ fun FormBuah(
     onDescChange: (String) -> Unit,
     modifier: Modifier
 ) {
-
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -225,7 +232,7 @@ fun FormBuah(
             )
         }
         Text(
-            text = "Pilih Gambar Buah",
+            text = stringResource(R.string.pilih),
             style = MaterialTheme.typography.titleMedium
         )
         LazyRow(
@@ -233,7 +240,6 @@ fun FormBuah(
         ) {
 
             items(daftarGambar) { gambar ->
-
                 Image(
                     painter = painterResource(id = gambar),
                     contentDescription = null,

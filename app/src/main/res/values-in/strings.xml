@@ -53,4 +53,7 @@
     <string name="invalid">Gambar, nama dan manfaat tidak boleh kosong.</string>
     <string name="lain">Opsi Lainnya</string>
     <string name="hapus">Hapus</string>
+    <string name="pesan">Hapus Buah ini?</string>
+    <string name="bat">Batal</string>
+    <string name="pilih">Pilih gambar buah</string>
 </resources>
