@@ -60,12 +60,17 @@ import com.satyayudha0077.assessment_mobpro.R
 import com.satyayudha0077.assessment_mobpro.model.Buah
 import com.satyayudha0077.assessment_mobpro.navigation.Screen
 import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
+import com.satyayudha0077.assessment_mobpro.util.SettingDataStore
 import com.satyayudha0077.assessment_mobpro.util.ViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    var showList by remember { mutableStateOf(true) }
+    val dataStore = SettingDataStore(LocalContext.current)
+    val showList by dataStore.layoutFlow.collectAsState(true)
 //    val context = LocalContext.current
 //    var index by remember { mutableIntStateOf(0) }
     Scaffold(
@@ -88,7 +93,11 @@ fun MainScreen(navController: NavHostController) {
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                    IconButton(onClick = { showList = !showList }) {
+                    IconButton(onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            dataStore.saveLayout(!showList)
+                        }
+                    }) {
                         Icon(
                             painter = painterResource(
                                 if (showList) R.drawable.baseline_grid_view_24
