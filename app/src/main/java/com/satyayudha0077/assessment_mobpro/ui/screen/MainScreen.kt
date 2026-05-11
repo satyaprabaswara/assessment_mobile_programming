@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Info
@@ -51,7 +52,7 @@ import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    val context = LocalContext.current
+//    val context = LocalContext.current
 //    var index by remember { mutableIntStateOf(0) }
     Scaffold(
         topBar = {
@@ -79,11 +80,7 @@ fun MainScreen(navController: NavHostController) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    Toast.makeText(
-                        context,
-                        R.string.belum,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    navController.navigate(Screen.FormBaru.route)
                 }
             ) {
                 Icon(

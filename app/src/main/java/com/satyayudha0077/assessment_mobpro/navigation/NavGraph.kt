@@ -22,7 +22,7 @@ fun SetupNavGraph(navController: NavHostController = rememberNavController()) {
             AboutScreen(navController)
         }
         composable (route = Screen.FormBaru.route) {
-            DetailScreen()
+            DetailScreen(navController)
         }
     }
 }

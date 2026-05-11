@@ -55,4 +55,5 @@ Total price: Rp %5$d</string>
     <string name="belum">Cant add fruit yet</string>
     <string name="nama">Name of Fruit</string>
     <string name="manfaat">Benefit of Fruit</string>
+    <string name="simpan">Save</string>
 </resources>
