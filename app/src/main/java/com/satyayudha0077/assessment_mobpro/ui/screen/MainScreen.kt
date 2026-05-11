@@ -132,7 +132,7 @@ fun ListItem(buah: Buah, onClick:() -> Unit ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick }
+            .clickable { onClick() }
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

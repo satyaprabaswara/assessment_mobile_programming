@@ -72,4 +72,8 @@ class MainViewModel : ViewModel() {
             R.string.manfaat_straw
         )
     )
+
+    fun getBuah(id: Long): Buah? {
+        return data.find { it.id == id }
+    }
 }

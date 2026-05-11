@@ -1,12 +1,15 @@
 package com.satyayudha0077.assessment_mobpro.ui.screen
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Check
@@ -20,17 +23,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.satyayudha0077.assessment_mobpro.R
@@ -39,8 +44,21 @@ import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(navController: NavHostController, id: Long? = null) {
+
+    val context = LocalContext.current
+    val viewModel: MainViewModel = viewModel()
+
     var nama by remember { mutableStateOf("") }
     var manfaat by remember { mutableStateOf("") }
+    var imageResId by remember { mutableStateOf(0) }
+
+    LaunchedEffect(key1 = Unit) {
+        if (id == null) return@LaunchedEffect
+        val data = viewModel.getBuah(id) ?: return@LaunchedEffect
+        nama = context.getString(data.nama)
+        manfaat = context.getString(data.manfaat)
+        imageResId = data.imageResId
+    }
 
     Scaffold(
         topBar = {
@@ -76,6 +94,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
         }
     ) { padding ->
         FormBuah(
+            imageResId = imageResId,
             title = nama,
             onTitleChange = { nama = it },
             desc = manfaat,
@@ -87,18 +106,36 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
 
 @Composable
 fun FormBuah(
-    title: String, onTitleChange: (String) -> Unit,
-    desc: String, onDescChange: (String) -> Unit,
+    imageResId: Int,
+    title: String,
+    onTitleChange: (String) -> Unit,
+    desc: String,
+    onDescChange: (String) -> Unit,
     modifier: Modifier
-){
+) {
+
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        if (imageResId != 0) {
+            Image(
+                painter = painterResource(id = imageResId),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
         OutlinedTextField(
             value = title,
-            onValueChange = { onTitleChange(it) },
-            label = { Text(text = stringResource(R.string.nama)) },
+            onValueChange = {
+                onTitleChange(it)
+            },
+            label = {
+                Text(text = stringResource(R.string.nama))
+            },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Words,
@@ -108,8 +145,12 @@ fun FormBuah(
         )
         OutlinedTextField(
             value = desc,
-            onValueChange = { onDescChange(it) },
-            label = { Text(text = stringResource(R.string.manfaat))},
+            onValueChange = {
+                onDescChange(it)
+            },
+            label = {
+                Text(text = stringResource(R.string.manfaat))
+            },
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences
             ),
