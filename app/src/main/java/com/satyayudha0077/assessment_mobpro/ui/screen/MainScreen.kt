@@ -2,6 +2,7 @@ package com.satyayudha0077.assessment_mobpro.ui.screen
 
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,11 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -111,12 +118,12 @@ fun MainScreen(navController: NavHostController) {
             }
         }
     ) { innerPadding ->
-        ScreenContent(modifier = Modifier.padding(innerPadding), navController)
+        ScreenContent(showList, modifier = Modifier.padding(innerPadding), navController)
     }
 }
 
 @Composable
-fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostController) {
+fun ScreenContent(showList: Boolean, modifier: Modifier = Modifier, navController: NavHostController) {
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel: MainViewModel = viewModel(factory = factory)
@@ -133,17 +140,34 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
         }
 
     } else {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 84.dp)
-        ) {
-            items(data) {
+        if (showList) {
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 84.dp)
+            ) {
+                items(data) {
 //                val pesan = stringResource(R.string.x_diklik, it.nama)
-                ListItem(buah = it) {
+                    ListItem(buah = it) {
 //                    Toast.makeText(context, pesan, Toast.LENGTH_SHORT).show()
-                    navController.navigate(Screen.FormUbah.withId(it.id))
+                        navController.navigate(Screen.FormUbah.withId(it.id))
+                    }
+                    HorizontalDivider()
                 }
-                HorizontalDivider()
+            }
+        }
+        else {
+            LazyVerticalStaggeredGrid(
+                modifier = modifier.fillMaxSize(),
+                columns = StaggeredGridCells.Fixed(2),
+                verticalItemSpacing = 8.dp,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(8.dp, 8.dp, 8.dp, 84.dp)
+            ) {
+                items(data) {
+                    GridItem(buah = it) {
+                        navController.navigate(Screen.FormUbah.withId(it.id))
+                    }
+                }
             }
         }
     }
@@ -179,6 +203,42 @@ fun ListItem(buah: Buah, onClick:() -> Unit ) {
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
+    }
+}
+
+@Composable
+fun GridItem(buah: Buah, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, DividerDefaults.color)
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (buah.imageResId != 0) {
+                Image(
+                    painter = painterResource(id = buah.imageResId),
+                    contentDescription = buah.nama,
+                    modifier = Modifier.size(120.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            Text(
+                text = buah.nama,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = buah.manfaat,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
