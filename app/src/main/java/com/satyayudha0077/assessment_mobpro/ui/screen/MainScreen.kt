@@ -101,9 +101,9 @@ fun MainScreen(navController: NavHostController) {
 @Composable
 fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostController) {
     val context = LocalContext.current
-    val factor = ViewModelFactory(context)
-    val viewModel: MainViewModel = viewModel()
-    val data by viewModel.dataa.collectAsState()
+    val factory = ViewModelFactory(context)
+    val viewModel: MainViewModel = viewModel(factory = factory)
+    val data by viewModel.data.collectAsState()
 //    val context = LocalContext.current
 
     if (data.isEmpty()) {
@@ -143,19 +143,19 @@ fun ListItem(buah: Buah, onClick:() -> Unit ) {
     ) {
         Image(
             painter = painterResource(id = buah.imageResId),
-            contentDescription = stringResource(id = buah.nama),
+            contentDescription = buah.nama,
             modifier = Modifier.size(120.dp),
             contentScale = ContentScale.Crop
         )
         Text(
-            text = stringResource(id = buah.nama),
+            text = buah.nama,
             maxLines = 1,
             style = MaterialTheme.typography.titleMedium,
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = stringResource(id = buah.manfaat),
+            text = buah.manfaat,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )

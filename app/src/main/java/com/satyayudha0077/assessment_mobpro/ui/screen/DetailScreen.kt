@@ -1,6 +1,7 @@
 package com.satyayudha0077.assessment_mobpro.ui.screen
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,13 +41,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.satyayudha0077.assessment_mobpro.R
 import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
+import com.satyayudha0077.assessment_mobpro.util.ViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(navController: NavHostController, id: Long? = null) {
 
     val context = LocalContext.current
-    val viewModel: MainViewModel = viewModel()
+    val factory = ViewModelFactory(context)
+    val viewModel: DetailViewModel = viewModel(factory = factory)
 
     var nama by remember { mutableStateOf("") }
     var manfaat by remember { mutableStateOf("") }
@@ -55,8 +58,8 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
     LaunchedEffect(key1 = Unit) {
         if (id == null) return@LaunchedEffect
         val data = viewModel.getBuah(id) ?: return@LaunchedEffect
-        nama = context.getString(data.nama)
-        manfaat = context.getString(data.manfaat)
+        nama = data.nama
+        manfaat = data.manfaat
         imageResId = data.imageResId
     }
 
@@ -64,7 +67,12 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        if (nama == "" || manfaat == ""){
+                            Toast.makeText(context, R.string.invalid, Toast.LENGTH_LONG).show()
+                            return@IconButton
+                        }
+                        navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.kembali)
@@ -82,7 +90,11 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 actions = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        if (id == null) {
+                            viewModel.insert(nama, manfaat, imageResId)
+                        }
+                        navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Outlined.Check,
                             contentDescription = stringResource(R.string.simpan),

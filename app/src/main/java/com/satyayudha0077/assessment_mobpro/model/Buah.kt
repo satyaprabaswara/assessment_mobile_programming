@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "buah")
 data class Buah(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
-    val nama: Int,
+    val id: Long = 0L,
+    val nama: String,
     val imageResId: Int,
-    val manfaat: Int
+    val manfaat: String
 )

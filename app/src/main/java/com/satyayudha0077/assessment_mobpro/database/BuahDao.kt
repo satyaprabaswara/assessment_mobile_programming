@@ -18,4 +18,10 @@ interface BuahDao {
 
     @Query("SELECT * FROM buah ORDER BY manfaat DESC")
     fun getBuah(): Flow<List<Buah>>
+
+    @Query("SELECT * FROM buah WHERE id = :id")
+    suspend fun getBuahById(id: Long): Buah?
+
+    @Query("SELECT COUNT(*) FROM buah")
+    suspend fun getJumlahData(): Int
 }

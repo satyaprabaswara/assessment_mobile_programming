@@ -50,4 +50,5 @@
     <string name="manfaat">Manfaat Buah</string>
     <string name="simpan">Simpan</string>
     <string name="edit">Ubah Buah</string>
+    <string name="invalid">Gambar, nama dan manfaat tidak boleh kosong.</string>
 </resources>
