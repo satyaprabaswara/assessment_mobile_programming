@@ -63,4 +63,6 @@ Total price: Rp %5$d</string>
     <string name="pesan">Delete the fruit?</string>
     <string name="bat">Cancel</string>
     <string name="pilih">Select the fruit image</string>
+    <string name="listt">List View</string>
+    <string name="grid">Grid View</string>
 </resources>

@@ -56,4 +56,6 @@
     <string name="pesan">Hapus Buah ini?</string>
     <string name="bat">Batal</string>
     <string name="pilih">Pilih gambar buah</string>
+    <string name="listt">Tampilan List</string>
+    <string name="grid">Tampilan Grid</string>
 </resources>
