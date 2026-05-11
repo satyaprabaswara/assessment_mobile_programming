@@ -53,4 +53,6 @@ Total price: Rp %5$d</string>
     <string name="x_diklik">%1$s clicked!</string>
     <string name="tambah">Add Fruit</string>
     <string name="belum">Cant add fruit yet</string>
+    <string name="nama">Name of Fruit</string>
+    <string name="manfaat">Benefit of Fruit</string>
 </resources>

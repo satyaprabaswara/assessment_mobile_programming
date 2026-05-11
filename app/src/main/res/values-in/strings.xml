@@ -46,4 +46,6 @@
     <string name="x_diklik">%1$s diklik!</string>
     <string name="tambah">Tambah Buah</string>
     <string name="belum">Belum bisa tambah buah</string>
+    <string name="nama">Nama Buah</string>
+    <string name="manfaat">Manfaat Buah</string>
 </resources>

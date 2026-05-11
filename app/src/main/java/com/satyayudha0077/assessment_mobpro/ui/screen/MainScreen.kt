@@ -1,7 +1,5 @@
 package com.satyayudha0077.assessment_mobpro.ui.screen
 
-import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -32,10 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -58,7 +52,7 @@ import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
 @Composable
 fun MainScreen(navController: NavHostController) {
     val context = LocalContext.current
-    var index by remember { mutableIntStateOf(0) }
+//    var index by remember { mutableIntStateOf(0) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -223,15 +217,15 @@ private fun hitungHarga(
     }
 }
 
-private fun  shareData(context: Context, message: String){
-    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_TEXT, message)
-    }
-    if (shareIntent.resolveActivity(context.packageManager) != null) {
-        context.startActivity(shareIntent)
-    }
-}
+//private fun  shareData(context: Context, message: String){
+//    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+//        type = "text/plain"
+//        putExtra(Intent.EXTRA_TEXT, message)
+//    }
+//    if (shareIntent.resolveActivity(context.packageManager) != null) {
+//        context.startActivity(shareIntent)
+//    }
+//}
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
