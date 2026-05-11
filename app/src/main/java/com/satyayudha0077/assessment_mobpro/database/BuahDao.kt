@@ -21,4 +21,7 @@ interface BuahDao {
 
     @Query("SELECT * FROM buah WHERE id = :id")
     suspend fun getBuahById(id: Long): Buah?
+
+    @Query("DELETE FROM buah WHERE id = :id")
+    suspend fun deleteById(id: Long)
 }

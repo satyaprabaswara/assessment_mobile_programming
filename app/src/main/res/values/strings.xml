@@ -58,4 +58,6 @@ Total price: Rp %5$d</string>
     <string name="simpan">Save</string>
     <string name="edit">Change Fruit</string>
     <string name="invalid">Images, names and benefits of fruit cannot be empty.</string>
+    <string name="lain">Other Option</string>
+    <string name="hapus">Delete</string>
 </resources>
