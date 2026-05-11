@@ -49,4 +49,5 @@
     <string name="nama">Nama Buah</string>
     <string name="manfaat">Manfaat Buah</string>
     <string name="simpan">Simpan</string>
+    <string name="edit">Ubah Buah</string>
 </resources>

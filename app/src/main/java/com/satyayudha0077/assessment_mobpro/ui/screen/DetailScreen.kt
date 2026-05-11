@@ -38,7 +38,7 @@ import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(navController: NavHostController) {
+fun DetailScreen(navController: NavHostController, id: Long? = null) {
     var nama by remember { mutableStateOf("") }
     var manfaat by remember { mutableStateOf("") }
 
@@ -54,7 +54,10 @@ fun DetailScreen(navController: NavHostController) {
                     }
                 },
                 title = {
-                    Text(text = stringResource(id = R.string.tambah))
+                    if (id == null)
+                        Text(text = stringResource(id = R.string.tambah))
+                    else
+                        Text(text = stringResource(id = R.string.edit))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,

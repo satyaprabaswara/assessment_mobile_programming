@@ -56,4 +56,5 @@ Total price: Rp %5$d</string>
     <string name="nama">Name of Fruit</string>
     <string name="manfaat">Benefit of Fruit</string>
     <string name="simpan">Save</string>
+    <string name="edit">Change Fruit</string>
 </resources>
