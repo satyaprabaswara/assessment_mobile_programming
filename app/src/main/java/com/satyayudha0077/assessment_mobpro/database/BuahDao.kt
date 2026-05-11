@@ -1,9 +1,6 @@
 package com.satyayudha0077.assessment_mobpro.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.satyayudha0077.assessment_mobpro.model.Buah
 import kotlinx.coroutines.flow.Flow
 
@@ -16,12 +13,12 @@ interface BuahDao {
     @Update
     suspend fun update(buah: Buah)
 
-    @Query("SELECT * FROM buah ORDER BY manfaat DESC")
+    @Delete
+    suspend fun delete(buah: Buah)
+
+    @Query("SELECT * FROM buah ORDER BY nama ASC")
     fun getBuah(): Flow<List<Buah>>
 
     @Query("SELECT * FROM buah WHERE id = :id")
     suspend fun getBuahById(id: Long): Buah?
-
-    @Query("SELECT COUNT(*) FROM buah")
-    suspend fun getJumlahData(): Int
 }

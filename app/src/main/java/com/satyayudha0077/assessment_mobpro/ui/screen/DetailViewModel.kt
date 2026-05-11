@@ -25,4 +25,17 @@ class DetailViewModel(private val dao: BuahDao) : ViewModel() {
     suspend fun getBuah(id: Long): Buah? {
         return dao.getBuahById(id)
     }
+
+    fun update(id: Long, nama: String, manfaat: String, imageResId: Int) {
+        val buah = Buah (
+            id = id,
+            nama = nama,
+            imageResId = imageResId,
+            manfaat = manfaat
+        )
+
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.update(buah)
+        }
+    }
 }

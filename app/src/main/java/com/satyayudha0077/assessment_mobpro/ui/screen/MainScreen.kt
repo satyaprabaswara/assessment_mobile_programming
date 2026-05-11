@@ -134,6 +134,7 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
 
 @Composable
 fun ListItem(buah: Buah, onClick:() -> Unit ) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -141,12 +142,14 @@ fun ListItem(buah: Buah, onClick:() -> Unit ) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Image(
-            painter = painterResource(id = buah.imageResId),
-            contentDescription = buah.nama,
-            modifier = Modifier.size(120.dp),
-            contentScale = ContentScale.Crop
-        )
+        if (buah.imageResId != 0) {
+            Image(
+                painter = painterResource(id = buah.imageResId),
+                contentDescription = buah.nama,
+                modifier = Modifier.size(120.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
         Text(
             text = buah.nama,
             maxLines = 1,

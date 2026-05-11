@@ -1,13 +1,17 @@
 package com.satyayudha0077.assessment_mobpro.ui.screen
 
 import android.content.res.Configuration
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -43,6 +47,22 @@ import com.satyayudha0077.assessment_mobpro.R
 import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
 import com.satyayudha0077.assessment_mobpro.util.ViewModelFactory
 
+val daftarGambar = listOf(
+    R.drawable.apel,
+    R.drawable.alpukat,
+    R.drawable.anggur,
+    R.drawable.durian,
+    R.drawable.jambu,
+    R.drawable.jeruk,
+    R.drawable.mangga,
+    R.drawable.manggis,
+    R.drawable.melon,
+    R.drawable.naga,
+    R.drawable.pepaya,
+    R.drawable.pisang,
+    R.drawable.strawberry
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(navController: NavHostController, id: Long? = null) {
@@ -53,7 +73,9 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
 
     var nama by remember { mutableStateOf("") }
     var manfaat by remember { mutableStateOf("") }
-    var imageResId by remember { mutableStateOf(0) }
+    var imageResId by remember {
+        mutableStateOf(daftarGambar[0])
+    }
 
     LaunchedEffect(key1 = Unit) {
         if (id == null) return@LaunchedEffect
@@ -67,12 +89,11 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = {
-                        if (nama == "" || manfaat == ""){
-                            Toast.makeText(context, R.string.invalid, Toast.LENGTH_LONG).show()
-                            return@IconButton
+                    IconButton(
+                        onClick = {
+                            navController.popBackStack()
                         }
-                        navController.popBackStack() }) {
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.kembali)
@@ -80,21 +101,45 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     }
                 },
                 title = {
-                    if (id == null)
-                        Text(text = stringResource(id = R.string.tambah))
-                    else
-                        Text(text = stringResource(id = R.string.edit))
+                    if (id == null) {
+                        Text(text = stringResource(R.string.tambah))
+                    } else {
+                        Text(text = stringResource(R.string.edit))
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 actions = {
-                    IconButton(onClick = {
-                        if (id == null) {
-                            viewModel.insert(nama, manfaat, imageResId)
+                    IconButton(
+                        onClick = {
+                            if (nama.isBlank() || manfaat.isBlank()) {
+                                Toast.makeText(
+                                    context,
+                                    R.string.invalid,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                return@IconButton
+                            }
+                            if (id == null) {
+                                viewModel.insert(
+                                    nama = nama,
+                                    manfaat = manfaat,
+                                    imageResId = imageResId
+                                )
+
+                            } else {
+                                viewModel.update(
+                                    id = id,
+                                    nama = nama,
+                                    manfaat = manfaat,
+                                    imageResId = imageResId
+                                )
+                            }
+                            navController.popBackStack()
                         }
-                        navController.popBackStack() }) {
+                    ) {
                         Icon(
                             imageVector = Icons.Outlined.Check,
                             contentDescription = stringResource(R.string.simpan),
@@ -107,6 +152,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
     ) { padding ->
         FormBuah(
             imageResId = imageResId,
+            onImageChange = { imageResId = it },
             title = nama,
             onTitleChange = { nama = it },
             desc = manfaat,
@@ -119,6 +165,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
 @Composable
 fun FormBuah(
     imageResId: Int,
+    onImageChange: (Int) -> Unit,
     title: String,
     onTitleChange: (String) -> Unit,
     desc: String,
@@ -139,6 +186,28 @@ fun FormBuah(
                     .padding(bottom = 16.dp),
                 contentScale = ContentScale.Crop
             )
+        }
+        Text(
+            text = "Pilih Gambar Buah",
+            style = MaterialTheme.typography.titleMedium
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+
+            items(daftarGambar) { gambar ->
+
+                Image(
+                    painter = painterResource(id = gambar),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clickable {
+                            onImageChange(gambar)
+                        },
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
         OutlinedTextField(
             value = title,

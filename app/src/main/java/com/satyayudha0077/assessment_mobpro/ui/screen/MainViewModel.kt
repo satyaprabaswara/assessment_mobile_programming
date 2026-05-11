@@ -1,21 +1,19 @@
 package com.satyayudha0077.assessment_mobpro.ui.screen
 
-import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.satyayudha0077.assessment_mobpro.R
 import com.satyayudha0077.assessment_mobpro.database.BuahDao
-import com.satyayudha0077.assessment_mobpro.model.Buah
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
 class MainViewModel(dao: BuahDao) : ViewModel() {
-    val data: StateFlow<List<Buah>> = dao.getBuah().stateIn(
+
+    val data = dao.getBuah().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = emptyList()
     )
+}
 //    val data = listOf(
 //        Buah(1,
 //            R.string.alpukat,
@@ -83,4 +81,3 @@ class MainViewModel(dao: BuahDao) : ViewModel() {
 //            R.string.manfaat_straw
 //        )
 //    )
-}
