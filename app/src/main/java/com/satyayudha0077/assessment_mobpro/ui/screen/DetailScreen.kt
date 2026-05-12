@@ -170,12 +170,13 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
 
         if (id != null && showDialog) {
             DisplayAlertDialog(
-                onDismissRequest = { showDialog = false }) { {
+                onDismissRequest = { showDialog = false },
+                onConfirmation = {
                     showDialog = false
                     viewModel.delete(id)
                     navController.popBackStack()
                 }
-            }
+            )
         }
     }
 }
@@ -206,6 +207,7 @@ fun DeleteAction(delete: () -> Unit ){
         }
     }
 }
+
 
 @Composable
 fun FormBuah(
