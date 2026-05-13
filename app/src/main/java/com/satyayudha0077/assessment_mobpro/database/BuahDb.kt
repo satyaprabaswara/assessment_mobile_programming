@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.satyayudha0077.assessment_mobpro.model.Buah
 
-@Database(entities = [Buah::class], version = 1, exportSchema = false)
+@Database(entities = [Buah::class], version = 2, exportSchema = false)
 abstract class BuahDb : RoomDatabase() {
 
     abstract val dao: BuahDao
@@ -24,7 +24,9 @@ abstract class BuahDb : RoomDatabase() {
                         context.applicationContext,
                         BuahDb::class.java,
                         "buah.db"
-                    ).build()
+                    )
+                        .fallbackToDestructiveMigration()
+                        .build()
                     INSTANCE = instance
                 }
                 return instance

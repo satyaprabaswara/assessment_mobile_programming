@@ -13,6 +13,12 @@ class MainViewModel(dao: BuahDao) : ViewModel() {
         started = SharingStarted.WhileSubscribed(),
         initialValue = emptyList()
     )
+
+    val deletedData = dao.getDeletedBuah().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = emptyList()
+    )
 }
 //    val data = listOf(
 //        Buah(1,

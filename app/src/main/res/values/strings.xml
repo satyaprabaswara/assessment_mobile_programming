@@ -65,4 +65,5 @@ Total price: Rp %5$d</string>
     <string name="pilih">Select the fruit image</string>
     <string name="listt">List View</string>
     <string name="grid">Grid View</string>
+    <string name="sampah">Recycle Bin</string>
 </resources>

@@ -9,5 +9,6 @@ data class Buah(
     val id: Long = 0L,
     val nama: String,
     val imageResId: Int,
-    val manfaat: String
+    val manfaat: String,
+    val isDeleted: Boolean = false
 )

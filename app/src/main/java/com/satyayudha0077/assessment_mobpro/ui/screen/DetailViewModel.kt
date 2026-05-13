@@ -27,11 +27,12 @@ class DetailViewModel(private val dao: BuahDao) : ViewModel() {
     }
 
     fun update(id: Long, nama: String, manfaat: String, imageResId: Int) {
-        val buah = Buah (
+
+        val buah = Buah(
             id = id,
             nama = nama,
-            imageResId = imageResId,
-            manfaat = manfaat
+            manfaat = manfaat,
+            imageResId = imageResId
         )
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -41,10 +42,19 @@ class DetailViewModel(private val dao: BuahDao) : ViewModel() {
 
     fun delete(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            val buah = dao.getBuahById(id)
-            if (buah != null) {
-                dao.delete(buah)
-            }
+            dao.softDelete(id)
+        }
+    }
+
+    fun restore(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.restore(id)
+        }
+    }
+
+    fun deletePermanent(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.deletePermanent(id)
         }
     }
 }

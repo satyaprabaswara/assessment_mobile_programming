@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.satyayudha0077.assessment_mobpro.ui.screen.RecycleBinScreen
 import com.satyayudha0077.assessment_mobpro.ui.screen.AboutScreen
 import com.satyayudha0077.assessment_mobpro.ui.screen.DetailScreen
 import com.satyayudha0077.assessment_mobpro.ui.screen.MainScreen
@@ -39,6 +40,10 @@ fun SetupNavGraph(navController: NavHostController = rememberNavController()) {
         ) { navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getLong(KEY_ID_BUAH) ?: 0L
             DetailScreen(navController, id)
+        }
+
+        composable(route = Screen.RecycleBin.route) {
+            RecycleBinScreen(navController)
         }
     }
 }
