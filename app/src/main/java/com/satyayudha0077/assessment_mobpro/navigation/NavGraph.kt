@@ -27,19 +27,19 @@ fun SetupNavGraph(navController: NavHostController = rememberNavController()) {
         }
 
         composable(route = Screen.FormBaru.route) {
-            DetailScreen(navController)
+            DetailScreen(navController = navController, id = null)
         }
 
         composable(
             route = Screen.FormUbah.route,
             arguments = listOf(
-                navArgument(KEY_ID_BUAH) {
+                navArgument("idBuah") {
                     type = NavType.LongType
                 }
             )
         ) { navBackStackEntry ->
-            val id = navBackStackEntry.arguments?.getLong(KEY_ID_BUAH) ?: 0L
-            DetailScreen(navController, id)
+            val id = navBackStackEntry.arguments?.getLong("idBuah") ?: 0L
+            DetailScreen(navController = navController, id = id)
         }
 
         composable(route = Screen.RecycleBin.route) {

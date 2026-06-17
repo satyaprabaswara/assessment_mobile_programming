@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BuahDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE) // Ditambahkan REPLACE agar aman saat sinkronisasi data cloud
     suspend fun insert(buah: Buah)
 
     @Update
@@ -16,21 +16,18 @@ interface BuahDao {
     @Delete
     suspend fun delete(buah: Buah)
 
-    @Query("SELECT * FROM buah WHERE isDeleted = 0 ORDER BY nama ASC")
+    @Query("SELECT * FROM buah ORDER BY nama ASC")
     fun getBuah(): Flow<List<Buah>>
-
-    @Query("SELECT * FROM buah WHERE isDeleted = 1 ORDER BY nama ASC")
-    fun getDeletedBuah(): Flow<List<Buah>>
 
     @Query("SELECT * FROM buah WHERE id = :id")
     suspend fun getBuahById(id: Long): Buah?
 
-    @Query("UPDATE buah SET isDeleted = 1 WHERE id = :id")
-    suspend fun softDelete(id: Long)
-
-    @Query("UPDATE buah SET isDeleted = 0 WHERE id = :id")
-    suspend fun restore(id: Long)
-
     @Query("DELETE FROM buah WHERE id = :id")
     suspend fun deletePermanent(id: Long)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(buahList: List<Buah>)
+
+    @Query("DELETE FROM buah")
+    suspend fun clearAll()
 }

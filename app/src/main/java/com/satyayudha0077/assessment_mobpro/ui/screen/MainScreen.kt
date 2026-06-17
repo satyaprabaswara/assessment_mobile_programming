@@ -1,61 +1,96 @@
 package com.satyayudha0077.assessment_mobpro.ui.screen
 
+import android.content.ContentResolver
+import androidx.compose.material.icons.filled.Edit
+import android.content.Context
 import android.content.res.Configuration
-import android.content.Intent
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.credentials.ClearCredentialStateRequest
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.ClearCredentialException
+import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.satyayudha0077.assessment_mobpro.BuildConfig
 import com.satyayudha0077.assessment_mobpro.R
 import com.satyayudha0077.assessment_mobpro.model.Buah
+import com.satyayudha0077.assessment_mobpro.model.User
 import com.satyayudha0077.assessment_mobpro.navigation.Screen
+import com.satyayudha0077.assessment_mobpro.network.ApiStatus
+import com.satyayudha0077.assessment_mobpro.network.UserdataStore
 import com.satyayudha0077.assessment_mobpro.ui.theme.Assessment_mobproTheme
-import com.satyayudha0077.assessment_mobpro.util.SettingDataStore
-import com.satyayudha0077.assessment_mobpro.util.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,15 +98,26 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    val dataStore = SettingDataStore(LocalContext.current)
-    val showList by dataStore.layoutFlow.collectAsState(true)
-//    val context = LocalContext.current
-//    var index by remember { mutableIntStateOf(0) }
+    var buahToDelete by remember { mutableStateOf<Buah?>(null) }
+    val context = LocalContext.current
+    val dataStore = UserdataStore(context)
+    val user by dataStore.userFlow.collectAsState(User())
+    var showDialog by remember { mutableStateOf(false) }
+    var showBuahDialog by remember { mutableStateOf(false) }
+    val viewModel: MainViewModel = viewModel()
+    val errorMessage by viewModel.errorMessage
+
+    var bitmap: Bitmap? by remember { mutableStateOf(null) }
+    val launcher = rememberLauncherForActivityResult(CropImageContract()) {
+        bitmap = getCroppedImage(context.contentResolver, it)
+        if (bitmap != null) showBuahDialog = true
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(id = R.string.app_name))
+                    Text(text = stringResource(id = R.string.app_name), fontWeight = FontWeight.Bold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -79,20 +125,11 @@ fun MainScreen(navController: NavHostController) {
                 ),
                 actions = {
                     IconButton(onClick = {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            dataStore.saveLayout(!showList)
-                        }
-                    }
-                    ) {
+                        navController.navigate(Screen.RecycleBin.route)
+                    }) {
                         Icon(
-                            painter = painterResource(
-                                if (showList) R.drawable.baseline_grid_view_24
-                                else R.drawable.baseline_list_24
-                            ),
-                            contentDescription = stringResource(
-                                if (showList) R.string.grid
-                                else R.string.list
-                            ),
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Recycle Bin",
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -106,11 +143,16 @@ fun MainScreen(navController: NavHostController) {
                         )
                     }
                     IconButton(onClick = {
-                        navController.navigate(Screen.RecycleBin.route)
+                        if (user.email.isEmpty()) {
+                            CoroutineScope(Dispatchers.IO).launch { sigIn(context, dataStore) }
+                        } else {
+                            showDialog = true
+                        }
                     }) {
                         Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Recycle Bin"
+                            painter = painterResource(R.drawable.account_circle_24),
+                            contentDescription = stringResource(R.string.profile),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -119,8 +161,16 @@ fun MainScreen(navController: NavHostController) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(Screen.FormBaru.route)
-                }
+                    val options = CropImageContractOptions(
+                        null, CropImageOptions(
+                            imageSourceIncludeGallery = false,
+                            imageSourceIncludeCamera = true,
+                            fixAspectRatio = true
+                        )
+                    )
+                    launcher.launch(options)
+                },
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
@@ -130,193 +180,293 @@ fun MainScreen(navController: NavHostController) {
             }
         }
     ) { innerPadding ->
-        ScreenContent(showList, modifier = Modifier.padding(innerPadding), navController)
-    }
-}
-
-@Composable
-fun ScreenContent(showList: Boolean, modifier: Modifier = Modifier, navController: NavHostController) {
-    val context = LocalContext.current
-    val factory = ViewModelFactory(context)
-    val viewModel: MainViewModel = viewModel(factory = factory)
-    val data by viewModel.data.collectAsState()
-//    val context = LocalContext.current
-
-    if (data.isEmpty()) {
-        Column(
-            modifier = modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
         ) {
-            Text(text = stringResource(id = R.string.list_kosong))
+            ScreenContent(
+                viewModel = viewModel,
+                userId = user.email,
+                modifier = Modifier.fillMaxSize(),
+                onDeleteClick = { buah ->
+                    buahToDelete = buah
+                }
+            )
         }
 
-    } else {
-        if (showList) {
-            LazyColumn(
-                modifier = modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 84.dp)
+        if (showDialog) {
+            ProfileDialog(
+                user = user,
+                onDismissRequest = { showDialog = false }
             ) {
-                items(data) {
-//                val pesan = stringResource(R.string.x_diklik, it.nama)
-                    ListItem(buah = it) {
-//                    Toast.makeText(context, pesan, Toast.LENGTH_SHORT).show()
-                        navController.navigate(Screen.FormUbah.withId(it.id))
+                CoroutineScope(Dispatchers.IO).launch { signOut(context, dataStore) }
+                showDialog = false
+            }
+        }
+
+        if (showBuahDialog) {
+            BuahDialog(
+                bitmap = bitmap,
+                onDismissRequest = { showBuahDialog = false }
+            ) { nama, manfaat ->
+                viewModel.saveData(user.email, nama, manfaat, bitmap!!)
+                showBuahDialog = false
+            }
+        }
+
+        if (buahToDelete != null) {
+            AlertDialog(
+                onDismissRequest = { buahToDelete = null },
+                title = { Text(text = stringResource(id = R.string.konfirmasi)) },
+                text = { Text(text = stringResource(id = R.string.teks)) },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModel.deleteData(user.email, buahToDelete!!.id)
+                            buahToDelete = null
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    ) {
+                        Text(text = stringResource(id = R.string.hapus))
                     }
-                    HorizontalDivider()
+                },
+                dismissButton = {
+                    TextButton(onClick = { buahToDelete = null }) {
+                        Text(text = stringResource(id = R.string.batal))
+                    }
+                }
+            )
+        }
+
+        if (errorMessage != null) {
+            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+            viewModel.clearMessage()
+        }
+    }
+}
+
+@Composable
+fun ScreenContent(
+    viewModel: MainViewModel,
+    userId: String,
+    modifier: Modifier = Modifier,
+    onDeleteClick: (Buah) -> Unit
+) {
+    val data by viewModel.data
+    val status by viewModel.status.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.retrieveData(userId)
+    }
+
+    when (status) {
+        ApiStatus.LOADING -> {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        ApiStatus.SUCCESS -> {
+            LazyVerticalGrid(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(bottom = 80.dp)
+            ) {
+                items(data) { buah ->
+                    BuahListItem(
+                        buah = buah,
+                        onDelete = {
+                            onDeleteClick(buah)
+                        },
+                        onEdit = {
+                            // kosong dulu
+                        }
+                    )
                 }
             }
         }
-        else {
-            LazyVerticalStaggeredGrid(
+
+        ApiStatus.FAILED -> {
+            Column(
                 modifier = modifier.fillMaxSize(),
-                columns = StaggeredGridCells.Fixed(2),
-                verticalItemSpacing = 8.dp,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(8.dp, 8.dp, 8.dp, 84.dp)
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(data) {
-                    GridItem(buah = it) {
-                        navController.navigate(Screen.FormUbah.withId(it.id))
-                    }
+                Text(
+                    text = stringResource(id = R.string.error),
+                    textAlign = TextAlign.Center
+                )
+
+                Button(
+                    onClick = {
+                        viewModel.retrieveData(userId)
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text(text = stringResource(id = R.string.coba))
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListItem(buah: Buah, onClick:() -> Unit ) {
+fun BuahListItem(
+    buah: Buah,
+    onDelete: () -> Unit,
+    onEdit: () -> Unit
+) {
 
-    Column(
+    LaunchedEffect(buah.imageResId) {
+        Log.d("DEBUG_IMAGE", "Loading URL: ${buah.imageResId}")
+    }
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(8.dp),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        if (buah.imageResId != 0) {
-            Image(
-                painter = painterResource(id = buah.imageResId),
-                contentDescription = buah.nama,
-                modifier = Modifier.size(120.dp),
-                contentScale = ContentScale.Crop
+        Column {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(buah.imageResId)
+                    .crossfade(true)
+                    .listener(
+                        onError = { _, result ->
+                            Log.e(
+                                "COIL_ERROR",
+                                result.throwable.message ?: "Unknown error"
+                            )
+                        }
+                    )
+                    .build(),
+                contentDescription = stringResource(R.string.gambar, buah.nama),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.loading_img),
+                error = painterResource(id = R.drawable.broken_image_24),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
             )
-        }
-        Text(
-            text = buah.nama,
-            maxLines = 1,
-            style = MaterialTheme.typography.titleMedium,
-            overflow = TextOverflow.Ellipsis,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = buah.manfaat,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-}
 
-@Composable
-fun GridItem(buah: Buah, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        border = BorderStroke(1.dp, DividerDefaults.color)
-    ) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (buah.imageResId != 0) {
-                Image(
-                    painter = painterResource(id = buah.imageResId),
-                    contentDescription = buah.nama,
-                    modifier = Modifier.size(120.dp),
-                    contentScale = ContentScale.Crop
-                )
+            Row(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = buah.nama,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = buah.manfaat,
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Row {
+                    IconButton(onClick = onEdit) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(id = R.string.edit)
+                        )
+                    }
+
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(id = R.string.hapus),
+                            tint = Color.Red
+                        )
+                    }
+                }
             }
-            Text(
-                text = buah.nama,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = buah.manfaat,
-                maxLines = 4,
-                overflow = TextOverflow.Ellipsis
-            )
         }
     }
 }
 
-//@Composable
-//fun FruitOption(
-//    label: String,
-//    isSelected: Boolean,
-//    modifier: Modifier = Modifier
-//) {
-//    Row(
-//        modifier = modifier,
-//        verticalAlignment = Alignment.CenterVertically
-//    ) {
-//        RadioButton(
-//            selected = isSelected,
-//            onClick = null
-//        )
-//        Text(
-//            text = label,
-//            style = MaterialTheme.typography.bodyMedium,
-//            modifier = Modifier.padding(start = 4.dp)
-//        )
-//    }
-//}
+private suspend fun sigIn(context: Context, dataStore: UserdataStore) {
+    val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+        .setFilterByAuthorizedAccounts(false)
+        .setServerClientId(BuildConfig.API_KEY)
+        .build()
 
-//@Composable
-//fun IconPicker(isError: Boolean, unit: String) {
-//    if (isError) {
-//        Icon(
-//            imageVector = Icons.Filled.Warning,
-//            contentDescription = null,
-//            tint = MaterialTheme.colorScheme.error
-//        )
-//    } else {
-//        Text(text = unit)
-//    }
-//}
-//
-//@Composable
-//fun ErrorHint(isError: Boolean) {
-//    if (isError) {
-//        Text(
-//            text = "Input tidak valid",
-//            color = MaterialTheme.colorScheme.error,
-//            style = MaterialTheme.typography.bodySmall
-//        )
-//    }
-//}
-//
-//private fun hitungHarga(
-//    jumlah: Int,
-//    berat: Int,
-//    isPiece: Boolean
-//): Int {
-//    return if (isPiece) {
-//        jumlah * 5000
-//    } else {
-//        berat * 20000
-//    }
-//}
+    val request: GetCredentialRequest = GetCredentialRequest.Builder()
+        .addCredentialOption(googleIdOption)
+        .build()
 
-private fun shareData(context: android.content.Context, text: String) {
-    val intent = Intent(Intent.ACTION_SEND)
-    intent.type = "text/plain"
-    intent.putExtra(Intent.EXTRA_TEXT, text)
-    context.startActivity(Intent.createChooser(intent, "Share"))
+    try {
+        val credentialManager = CredentialManager.create(context)
+        val result = credentialManager.getCredential(context, request)
+        handleSignIn(result, dataStore)
+    } catch (e: GetCredentialException) {
+        Log.e("SIGN-IN", "Error: ${e.errorMessage}")
+    }
+}
+
+private suspend fun handleSignIn(result: GetCredentialResponse, dataStore: UserdataStore) {
+    val credential = result.credential
+    if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+        try {
+            val googleId = GoogleIdTokenCredential.createFrom(credential.data)
+            val nama = googleId.displayName ?: ""
+            val email = googleId.id
+            val photoUrl = googleId.profilePictureUri.toString()
+            dataStore.saveData(User(nama, email, photoUrl))
+        } catch (e: GoogleIdTokenParsingException) {
+            Log.e("SIGN-IN", "Error: ${e.message}")
+        }
+    } else {
+        Log.e("SIGN-IN", "Error: unrecognized custom credential type.")
+    }
+}
+
+private suspend fun signOut(context: Context, dataStore: UserdataStore) {
+    try {
+        val credentialManager = CredentialManager.create(context)
+        credentialManager.clearCredentialState(ClearCredentialStateRequest())
+        dataStore.saveData(User())
+    } catch (e: ClearCredentialException) {
+        Log.e("SIGN-IN", "Error: ${e.message}")
+    }
+}
+
+private fun getCroppedImage(
+    resolver: ContentResolver,
+    result: CropImageView.CropResult
+): Bitmap? {
+    if (!result.isSuccessful) {
+        Log.e("IMAGE", "Error: ${result.error}")
+    }
+
+    val uri = result.uriContent ?: return null
+
+    return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+        @Suppress("DEPRECATION")
+        MediaStore.Images.Media.getBitmap(resolver, uri)
+    } else {
+        val source = ImageDecoder.createSource(resolver, uri)
+        ImageDecoder.decodeBitmap(source)
+    }
 }
 
 @Preview(showBackground = true)

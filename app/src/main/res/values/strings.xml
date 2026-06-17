@@ -66,4 +66,12 @@ Total price: Rp %5$d</string>
     <string name="listt">List View</string>
     <string name="grid">Grid View</string>
     <string name="sampah">Recycle Bin</string>
+    <string name="error">Failed to load data... Connection error</string>
+    <string name="coba">Try again</string>
+    <string name="profile">Profile</string>
+    <string name="tutup">Close</string>
+    <string name="logout">Logout</string>
+    <string name="batal">Cancel</string>
+    <string name="konfirmasi">Delete Confirmation</string>
+    <string name="teks">Are you sure you want to delete?</string>
 </resources>

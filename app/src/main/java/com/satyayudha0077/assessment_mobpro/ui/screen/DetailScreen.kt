@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,12 +27,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -77,11 +79,11 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
 
     var nama by remember { mutableStateOf("") }
     var manfaat by remember { mutableStateOf("") }
-    var imageResId by remember { mutableIntStateOf(daftarGambar[0]) }
+    var imageResId by remember { mutableStateOf(daftarGambar[0].toString()) }
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit) {
-        if (id == null) return@LaunchedEffect
+        if (id == null || id == 0L) return@LaunchedEffect
         val data = viewModel.getBuah(id) ?: return@LaunchedEffect
         nama = data.nama
         manfaat = data.manfaat
@@ -92,11 +94,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                        }
-                    ) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.kembali)
@@ -104,7 +102,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     }
                 },
                 title = {
-                    if (id == null) {
+                    if (id == null || id == 0L) {
                         Text(text = stringResource(R.string.tambah))
                     } else {
                         Text(text = stringResource(R.string.edit))
@@ -118,20 +116,15 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     IconButton(
                         onClick = {
                             if (nama.isBlank() || manfaat.isBlank()) {
-                                Toast.makeText(
-                                    context,
-                                    R.string.invalid,
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                Toast.makeText(context, R.string.invalid, Toast.LENGTH_LONG).show()
                                 return@IconButton
                             }
-                            if (id == null) {
+                            if (id == null || id == 0L) {
                                 viewModel.insert(
                                     nama = nama,
                                     manfaat = manfaat,
                                     imageResId = imageResId
                                 )
-
                             } else {
                                 viewModel.update(
                                     id = id,
@@ -149,7 +142,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                    if (id != null) {
+                    if (id != null && id != 0L) {
                         DeleteAction {
                             showDialog = true
                         }
@@ -168,13 +161,26 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
             modifier = Modifier.padding(padding)
         )
 
-        if (id != null && showDialog) {
-            DisplayAlertDialog(
+        if (id != null && id != 0L && showDialog) {
+            AlertDialog(
                 onDismissRequest = { showDialog = false },
-                onConfirmation = {
-                    showDialog = false
-                    viewModel.delete(id)
-                    navController.popBackStack()
+                title = { Text("Hapus Permanen") },
+                text = { Text("Apakah Anda yakin ingin menghapus data buah ini dari database?") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDialog = false
+                            viewModel.deletePermanent(id) // 🌟 FIX: Memanggil id, bukan buahId yang tidak ada
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Text("Hapus", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Batal")
+                    }
                 }
             )
         }
@@ -196,36 +202,35 @@ fun DeleteAction(delete: () -> Unit ){
             onDismissRequest = { expanded = false }
         ) {
             DropdownMenuItem(
-                text = {
-                    Text(text = stringResource(id = R.string.hapus))
-                },
+                text = { Text(text = stringResource(id = R.string.hapus)) },
                 onClick = {
                     expanded = false
-                    delete()
+                    delete() // 🌟 FIX: Menjalankan alias fungsi lambda parameter dengan benar
                 }
             )
         }
     }
 }
 
-
 @Composable
 fun FormBuah(
-    imageResId: Int,
-    onImageChange: (Int) -> Unit,
+    imageResId: String,
+    onImageChange: (String) -> Unit,
     title: String,
     onTitleChange: (String) -> Unit,
     desc: String,
     onDescChange: (String) -> Unit,
     modifier: Modifier
 ) {
+    val currentImageInt = imageResId.toIntOrNull() ?: R.drawable.apel
+
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        if (imageResId != 0) {
+        if (currentImageInt != 0) {
             Image(
-                painter = painterResource(id = imageResId),
+                painter = painterResource(id = currentImageInt),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -240,28 +245,21 @@ fun FormBuah(
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             items(daftarGambar) { gambar ->
                 Image(
                     painter = painterResource(id = gambar),
                     contentDescription = null,
                     modifier = Modifier
                         .size(80.dp)
-                        .clickable {
-                            onImageChange(gambar)
-                        },
+                        .clickable { onImageChange(gambar.toString()) },
                     contentScale = ContentScale.Crop
                 )
             }
         }
         OutlinedTextField(
             value = title,
-            onValueChange = {
-                onTitleChange(it)
-            },
-            label = {
-                Text(text = stringResource(R.string.nama))
-            },
+            onValueChange = { onTitleChange(it) },
+            label = { Text(text = stringResource(R.string.nama)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Words,
@@ -271,12 +269,8 @@ fun FormBuah(
         )
         OutlinedTextField(
             value = desc,
-            onValueChange = {
-                onDescChange(it)
-            },
-            label = {
-                Text(text = stringResource(R.string.manfaat))
-            },
+            onValueChange = { onDescChange(it) },
+            label = { Text(text = stringResource(R.string.manfaat)) },
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences
             ),

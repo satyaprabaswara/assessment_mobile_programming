@@ -59,4 +59,12 @@
     <string name="listt">Tampilan List</string>
     <string name="grid">Tampilan Grid</string>
     <string name="sampah">Daur Ulang Sampah</string>
+    <string name="error">Gagal memuat data... Koneksi error.</string>
+    <string name="coba">Coba lagi</string>
+    <string name="profile">Profil</string>
+    <string name="tutup">Tutup</string>
+    <string name="logout">Keluar</string>
+    <string name="batal">Batal</string>
+    <string name="konfirmasi">Konfirmasi hapus</string>
+    <string name="teks">Apakah kamu yakin ingin menghapus?</string>
 </resources>
